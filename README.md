@@ -3,7 +3,7 @@ scala-utils
 
 Multiple small Scala utils for timing, evaluation, etc.
 
-cmdopts: Command-lin Options Parsing
+cmdopts: Command-line Options Parsing
 ------------------------------------
 
 coref: Represent and evaluatate Coreference (and clustering)

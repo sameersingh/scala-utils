@@ -5,28 +5,26 @@ package org.sameersingh.utils.pickle
  * @date 9/20/11
  */
 
-object Pickle {
-  trait Pickler[Value] {
-    def saveToString(v: Value): String
+trait Pickler[Value] {
+  def saveToString(v: Value): String
 
-    def loadFromString(s: String): Value
-  }
+  def loadFromString(s: String): Value
+}
 
-  object IntPickler extends Pickler[Int] {
-    def saveToString(v: Int) = v.toString
+object IntPickler extends Pickler[Int] {
+  def saveToString(v: Int) = v.toString
 
-    def loadFromString(s: String) = s.toInt
-  }
+  def loadFromString(s: String) = s.toInt
+}
 
-  object StringPickler extends Pickler[String] {
-    def saveToString(v: String) = v
+object StringPickler extends Pickler[String] {
+  def saveToString(v: String) = v
 
-    def loadFromString(s: String) = s
-  }
+  def loadFromString(s: String) = s
+}
 
-  object DoublePickler extends Pickler[Double] {
-    def saveToString(v: Double) = v.toString
+object DoublePickler extends Pickler[Double] {
+  def saveToString(v: Double) = v.toString
 
-    def loadFromString(s: String) = s.toDouble
-  }
+  def loadFromString(s: String) = s.toDouble
 }

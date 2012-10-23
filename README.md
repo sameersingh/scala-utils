@@ -9,9 +9,6 @@ cmdopts: Command-line Options Parsing
 coref: Represent and evaluatate Coreference (and clustering)
 ------------------------------------------------------------
 
-pickle: Serialization of common fields
---------------------------------------
-
 termutils: Pretty printing on the terminal
 ------------------------------------------
 

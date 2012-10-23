@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.sameersingh.utils</groupId>
   <artifactId>misc</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>${project.artifactId}</name>
   <description>Other miscellaneous utilities</description>
   <inceptionYear>2012</inceptionYear>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.sameersingh.utils</groupId>
       <artifactId>timing</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.1</version>
     </dependency>
 
     <!-- Test -->
@@ -73,6 +73,16 @@
 
   <distributionManagement>
     <repository>
+      <id>sameer-releases</id>
+      <name>Sameer's repostory</name>
+      <url>https://github.com/sameersingh/maven-repo/raw/master/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>sameer-snapshots</id>
+      <name>Sameer's repository</name>
+      <url>https://github.com/sameersingh/maven-repo/raw/master/snapshots</url>
+    </snapshotRepository>
+    <!-- repository>
       <id>ieslnexus</id>
       <name>IESL Nexus repostory</name>
       <url>https://dev-iesl.cs.umass.edu/nexus/content/repositories/releases</url>
@@ -86,7 +96,7 @@
       <id>ieslwww</id>
       <name>IESL www repository</name>
       <url>scp://iesl.cs.umass.edu/m/iesl/data2/www/iesl/maven/factorie</url>
-    </site>
+    </site-->
   </distributionManagement>
 
   <build>

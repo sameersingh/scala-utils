@@ -3,6 +3,18 @@ scala-utils
 
 Multiple small Scala utils for timing, evaluation, etc.
 
+# Installation
+
+```
+    <dependency>
+      <groupId>org.sameersingh.utils</groupId>
+      <artifactId>${util.name}</artifactId>
+      <version>${utils.version}</version>
+    </dependency>
+```
+
+where `util.name` is one of `cmdopts`, `misc`, `coref`, `termutils`, or `timing`, while `utils.version` is `0.1.1-SNAPSHOT`.
+
 cmdopts: Command-line Options Parsing
 ------------------------------------
 

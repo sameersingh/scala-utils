@@ -33,7 +33,8 @@ object CorefEvaluator {
     def f1: Double = {
       val r: Double = recall
       val p: Double = precision
-      (2 * p * r) / (p + r)
+      if(p + r == 0.0) 0.0
+      else (2 * p * r) / (p + r)
     }
 
     def toString(prefix: String): String = {

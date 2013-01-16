@@ -10,17 +10,40 @@
   <name>${project.artifactId}</name>
   <packaging>jar</packaging>
 
-<dependencies>
-  <dependency>
-    <groupId>${parent.groupId}</groupId>
-    <artifactId>timing</artifactId>
-    <version>${parent.version}</version>
-  </dependency>
-  <dependency>
-    <groupId>${parent.groupId}</groupId>
-    <artifactId>misc</artifactId>
-    <version>${parent.version}</version>
-  </dependency>
-</dependencies>
+  <properties>
+    <factorie.version>1.0.0-M2</factorie.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>ieslnexus</id>
+      <name>IESL Nexus repostory</name>
+      <url>https://dev-iesl.cs.umass.edu/nexus/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>ieslnexus-snapshots</id>
+      <name>IESL Nexus repostory</name>
+      <url>https://dev-iesl.cs.umass.edu/nexus/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>timing</artifactId>
+      <version>${parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>misc</artifactId>
+      <version>${parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cc.factorie</groupId>
+      <artifactId>factorie</artifactId>
+      <version>${factorie.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>

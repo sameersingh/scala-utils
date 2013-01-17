@@ -46,8 +46,6 @@ abstract class AffinityVectorGetter[R <: MentionRecord] {
   def getAffinity(r1: R, r2: R): FeatureVectorVariable[String]
 
   def domain: CategoricalTensorDomain[String]
-
-  def getNumMentions: Int
 }
 
 abstract class PairwiseTemplate[R <: MentionRecord](val avg: AffinityVectorGetter[R])

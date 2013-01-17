@@ -3,9 +3,9 @@ package org.sameersingh.utils.coref
 import cc.factorie._
 import collection.mutable.{Map, HashMap}
 
-/**Observed features of a mention */
-trait MentionRecord {
-  def id: Int
+/** Observed features of a mention */
+trait MentionRecord extends Serializable {
+  def id: Int // supports only upto 2 billion mentions :)
 
   override def toString = "MR(" + id + ")"
 }
@@ -14,7 +14,7 @@ class BasicRecord(val id_ : Int) extends MentionRecord {
   def id = id_
 }
 
-/**Unobserved "Entity" of a mention. Underlying observed mention is typed by its features */
+/** Unobserved "Entity" of a mention. Underlying observed mention is typed by its features */
 class EntityRef[T <: MentionRecord](val mention: Mention[T], initialEntity: Entity[T])
       extends RefVariable[Entity[T]](initialEntity) {
   initialEntity.add(mention)(null)
@@ -40,7 +40,7 @@ abstract class TrueEntityIndex[T <: MentionRecord](i: Int) extends IntegerVariab
   def mention: Mention[T]
 }
 
-/**Observed variable that contains the "features" of a mention */
+/** Observed variable that contains the "features" of a mention */
 class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity: Entity[T]) extends Variable {
   type ValueType = T
   type Value = T
@@ -53,10 +53,14 @@ class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity:
     null
   }
 
+  def setEntity(e: Entity[T])(implicit d: DiffList) = entityRef.set(e)(d)
+
   val trueEntityIndex = new TrueEntityIndex[T](trueEntity) {
     def mention = Mention.this
   }
+
   val entityRef = new EntityRef(this, initialEntity)
+
 
   def entity: Entity[T] = entityRef.value
 
@@ -65,9 +69,11 @@ class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity:
   override def toString = "Mention(" + record + "==" + entityRef.value.id + ")"
 }
 
-/**A random variable for an entity, which is merely a set of Mentions */
+/** A random variable for an entity, which is merely a set of Mentions */
 class Entity[T <: MentionRecord](val id: Long) extends SetVariable[Mention[T]] {
   def mentions = members
+
+  def isEmpty = mentions.isEmpty
 
   override def toString = "Entity(" + id + "): " + mentions.toSeq.size
 

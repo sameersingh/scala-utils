@@ -2,7 +2,11 @@ package org.sameersingh.utils.coref
 
 import cc.factorie._
 import scala.util.Random
-import scala.collection.mutable.{Set, HashSet, ArrayBuffer, Buffer, PriorityQueue}
+import collection.mutable._
+import reflect.Manifest
+import scala.Seq
+import scala.Iterable
+import org.sameersingh.utils.timing.TimeUtil
 
 object Proposers {
 
@@ -382,6 +386,71 @@ object Proposers {
       return bfRatio
     }
 
+  }
+
+  class CanopizedSampler[R <: MentionRecord](model: TemplateModel, var mentionList: Seq[Mention[R]] = Seq.empty,
+                                    var entityList: Buffer[Entity[R]] = new ArrayBuffer[Entity[R]],
+                                    val canopizer: Canopizer[R] = new DefaultCanopizer[R])
+                                   (implicit nm1: Manifest[EntityRef[R]], nm2: Manifest[TrueEntityIndex[R]])
+        extends CorefProposer[R](model) {
+    val objective_ = new Objective(mentionList)
+    protected var canopies = new HashMap[String, ArrayBuffer[Mention[R]]]
+    initCanopies
+
+    def initCanopies = {
+      canopies.clear
+      mentionList.foreach((m: Mention[R]) => {
+        for (cname <- canopizer.canopies(m.record)) {
+          canopies.getOrElse(cname, {
+            val a = new ArrayBuffer[Mention[R]];
+            canopies(cname) = a;
+            a
+          }) += m
+        }
+      })
+    }
+
+    def entities = entityList
+
+    def setEntities(es: Seq[Entity[R]]) = {
+      entityList.clear()
+      entityList ++= es
+      mentionList = es.flatMap(_.mentions).toSeq
+      initCanopies
+    }
+
+    def nextMention(m: Mention[R] = null): Mention[R] = {
+      if (m == null) mentionList.sampleUniformly(cc.factorie.random)
+      else canopies(m.record.defaultCanopies.sampleUniformly(cc.factorie.random)).sampleUniformly(cc.factorie.random)
+    }
+
+    override def propose(context: Null)(implicit difflist: DiffList): Double = {
+      val m1 = nextMention()
+      val m2 = nextMention(m1)
+      //println("  m1.e.id="+m1.entity.id)
+      //println("  m2.e.id="+m2.entity.id)
+      if (m1.entity.id == m2.entity.id) {
+        //m2.entityRef.set(null)
+        m2.entityRef.set(new Entity(m2.record.id))
+      } else {
+        m2.entityRef.set(m1.entity)
+      }
+      0.0
+    }
+
+    lazy val labeledMentionList = mentionList.filter(_.trueEntityIndex.intValue != -1).toSeq
+
+    override def postProcessHook(context: Null, difflist: DiffList): Unit = {
+      super.postProcessHook(context, difflist)
+      if ((processCount + 1) % 1000000 == 0) {
+        //learningRate *= .9
+        println("Accepted: " + numAcceptedMoves + " / " + numProposedMoves)
+        println("NumEntites: " + entityList.filter(_.size > 0).size)
+        println("Num labeled mentions: " + labeledMentionList.size)
+        TimeUtil.snapshot("===== Evaluating =====\n" + Evaluator.evaluate(labeledMentionList))
+        println
+      }
+    }
   }
 
 }

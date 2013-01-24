@@ -6,13 +6,10 @@ import collection.mutable.{Map, HashMap}
 /** Observed features of a mention */
 trait MentionRecord extends Serializable {
   def id: Int // supports only upto 2 billion mentions :)
-
-  override def toString = "MR(" + id + ")"
+  def defaultCanopies: scala.collection.Set[String] = Set.empty
 }
 
-class BasicRecord(val id_ : Int) extends MentionRecord {
-  def id = id_
-}
+case class BasicRecord(id : Int) extends MentionRecord
 
 /** Unobserved "Entity" of a mention. Underlying observed mention is typed by its features */
 class EntityRef[T <: MentionRecord](val mention: Mention[T], initialEntity: Entity[T])

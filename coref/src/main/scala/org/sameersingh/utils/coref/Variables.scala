@@ -38,15 +38,11 @@ abstract class TrueEntityIndex[T <: MentionRecord](i: Int) extends IntegerVariab
 }
 
 /** Observed variable that contains the "features" of a mention */
-class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity: Entity[T]) extends Variable {
-  type ValueType = T
-  type Value = T
-  type VariableType = this.type
-
+class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity: Entity[T]) extends VarWithValue[T] {
   def value: T = record
 
   def domain = {
-    new Error("Requesting domain of an observed variable");
+    new Error("Requesting domain of an observed variable")
     null
   }
 

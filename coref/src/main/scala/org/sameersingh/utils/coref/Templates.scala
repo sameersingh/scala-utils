@@ -45,7 +45,7 @@ class Objective[R <: MentionRecord](val mentions: Iterable[Mention[R]])
 abstract class AffinityVectorGetter[R <: MentionRecord] {
   def getAffinity(r1: R, r2: R): FeatureVectorVariable[String]
 
-  def domain: CategoricalTensorDomain[String]
+  def domain: CategoricalDimensionTensorDomain[String]
 }
 
 abstract class PairwiseTemplate[R <: MentionRecord](val avg: AffinityVectorGetter[R])
@@ -281,7 +281,7 @@ class Repulsion[R <: MentionRecord](avg: AffinityVectorGetter[R])
 abstract class EntityVectorGetter[R <: MentionRecord] {
   def getFeatureVector(e: scala.collection.Set[Mention[R]]): FeatureVectorVariable[String]
 
-  def domain: CategoricalTensorDomain[String]
+  def domain: CategoricalDimensionTensorDomain[String]
 }
 
 class EntityTemplate[R <: MentionRecord](val evg: EntityVectorGetter[R])
@@ -305,7 +305,7 @@ class EntityTemplate[R <: MentionRecord](val evg: EntityVectorGetter[R])
   }
 
   // skip hash checking..
-  override def factors(variables: Iterable[Variable]): Iterable[FactorType] = {
+  override def factors(variables: Iterable[Var]): Iterable[FactorType] = {
     if (variables.size == 1) return factors(variables.head) // Efficiently avoids the HashSet.
     var result = new ListBuffer[FactorType]()
     for (v <- variables; factor <- factors(v)) {

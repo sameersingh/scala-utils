@@ -1,7 +1,7 @@
 package org.sameersingh.utils.coref
 
-import collection.mutable.{Set => MSet, HashSet, Map, HashMap}
-import collection.Set
+import collection.mutable.{Set => MSet, ArrayBuffer, HashSet, Map, HashMap}
+import collection.{mutable, Set}
 import org.sameersingh.utils.misc.Alphabet
 import io.Source
 
@@ -9,7 +9,8 @@ import io.Source
  * Class to store a clustering over a subset of mentions.
  */
 class GenericEntityMap[M] {
-  val entities: Map[Long, MSet[M]] = new HashMap // eId -> [mentions]
+  val entities: Map[Long, MSet[M]] = new HashMap
+  // eId -> [mentions]
   val reverseMap: Map[M, Long] = new HashMap // mention -> eId
 
   def getEntities: Iterable[Set[M]] = {
@@ -64,7 +65,7 @@ class GenericEntityMap[M] {
     }
   }
 
-  def addMention(mId: M, eId: Long) = {
+  def addMention(mId: M, eId: Long): Unit = {
     if (reverseMap.contains(mId)) {
       if (reverseMap(mId) == eId) {
         // already in the right entity
@@ -119,6 +120,24 @@ class GenericEntityMap[M] {
 
 }
 
+trait Key[K, M] {
+  this: GenericEntityMap[M] =>
+  val map = new HashMap[K, Long]()
+  val list = new ArrayBuffer[K]()
+
+  implicit def key(id: Long): K = list(id.toInt)
+
+  implicit def id(key: K): Long = map.getOrElseUpdate(key, {list += key; list.length.toLong - 1l})
+
+  def addMention(mId: M, eId: K): Unit = addMention(mId, id(eId))
+
+  def getEntityKey(mId: M): K = key(getEntity(mId))
+
+  def getEntityKeys = getEntityIds.map(key(_)).toSet
+
+  def getMentions(eId: K): Set[M] = getMentions(id(eId))
+}
+
 class EntityMap extends GenericEntityMap[Long]
 
 object EntityMap {
@@ -163,32 +182,4 @@ object EntityMap {
     map
   }
 
-  // Test the pairwise mentions
-  ///*
-  def testPairwise: Unit = {
-    val e = EntityMap.initToSingletons((0l until 12l))
-    e.addCoreferentPair(0, 2)
-    e.addCoreferentPair(1, 3)
-    println(e)
-    e.addCoreferentPair(4, 6)
-    e.addCoreferentPair(5, 7)
-    println(e)
-    println(e.checkConsistency)
-    e.addCoreferentPair(8, 10)
-    e.addCoreferentPair(9, 11)
-    println(e)
-    e.addCoreferentPair(2, 4)
-    println(e)
-    println(e.checkConsistency)
-    e.addCoreferentPair(6, 8)
-    println(e)
-    e.addCoreferentPair(3, 5)
-    println(e)
-    println(e.checkConsistency)
-    e.addCoreferentPair(7, 9)
-    println(e)
-    e.addCoreferentPair(0, 1)
-    println(e)
-    println(e.checkConsistency)
-  } //*/
 }

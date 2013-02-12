@@ -162,7 +162,7 @@ object CorefEvaluator {
     }
   }
 
-  def evaluate(pred: EntityMap, truth: EntityMap, debug: Boolean = false): String = {
+  def evaluate[M](pred: GenericEntityMap[M], truth: GenericEntityMap[M], debug: Boolean = false): String = {
     val sb: StringBuffer = new StringBuffer
     sb.append("P(mentions,entities) %d %d\n".format(pred.numMentions, pred.numEntities))
     sb.append("T(mentions,entities) %d %d\n".format(truth.numMentions, truth.numEntities))

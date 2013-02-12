@@ -122,10 +122,10 @@ class GenericEntityMap[M] {
 class EntityMap extends GenericEntityMap[Long]
 
 object EntityMap {
-  def initToSingletons(mentions: Iterable[Long]): EntityMap = {
-    val e: EntityMap = new EntityMap
+  def initToSingletons[M](mentions: Iterable[M]): GenericEntityMap[M] = {
+    val e: GenericEntityMap[M] = new GenericEntityMap[M]
     var entityIndex: Long = 0
-    for (m: Long <- mentions) {
+    for (m: M <- mentions) {
       e.addMention(m, entityIndex)
       entityIndex += 1
     }

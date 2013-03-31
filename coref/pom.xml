@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.sameersingh.utils</groupId>
     <artifactId>utils</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1-DEFT-03-31-2013</version>
   </parent>
   <artifactId>coref</artifactId>
   <name>${project.artifactId}</name>
   <packaging>jar</packaging>
 
   <properties>
-    <factorie.version>1.0.0-M3</factorie.version>
+    <factorie.version>1.0-DEFT-03-31-2013</factorie.version>
   </properties>
 
   <repositories>

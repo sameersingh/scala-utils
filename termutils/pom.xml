@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sameersingh.utils</groupId>
     <artifactId>utils</artifactId>
-    <version>0.1.1-DEFT-03-31-2013</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>termutils</artifactId>
   <name>${project.artifactId}</name>

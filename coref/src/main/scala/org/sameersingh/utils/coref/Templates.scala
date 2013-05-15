@@ -99,7 +99,7 @@ abstract class PairwiseTemplate[R <: MentionRecord](val avg: AffinityVectorGette
   //    result
   //  }
 
-  lazy val weights = new DenseTensor1(avg.domain.dimensionSize)
+  lazy val weightsTensor = new DenseTensor1(avg.domain.dimensionSize)
 
   def calcNormalizer(mentions: Seq[Mention[R]]) = {
     normalizer = new DenseTensor1(avg.domain.dimensionSize)
@@ -291,7 +291,7 @@ class EntityTemplate[R <: MentionRecord](val evg: EntityVectorGetter[R])
 
   override def statistics(v1: Entity[R]#Value) = evg.getFeatureVector(v1).value
 
-  lazy val weights = new DenseTensor1(evg.domain.dimensionSize)
+  lazy val weightsTensor = new DenseTensor1(evg.domain.dimensionSize)
 
   //override def statisticsDomains = List(evg.domain)
 

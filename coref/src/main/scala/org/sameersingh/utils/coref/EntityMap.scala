@@ -1,7 +1,7 @@
 package org.sameersingh.utils.coref
 
-import collection.mutable.{Set => MSet, ArrayBuffer, HashSet, Map, HashMap}
-import collection.{mutable, Set}
+import collection.mutable.{Set => MSet, ArrayBuffer, HashSet, Map, LinkedHashMap, HashMap}
+import scala.collection.{mutable, Set}
 import org.sameersingh.utils.misc.Alphabet
 import io.Source
 
@@ -9,9 +9,9 @@ import io.Source
  * Class to store a clustering over a subset of mentions.
  */
 class GenericEntityMap[M] {
-  val entities: Map[Long, MSet[M]] = new HashMap
+  val entities: Map[Long, MSet[M]] = new LinkedHashMap
   // eId -> [mentions]
-  val reverseMap: Map[M, Long] = new HashMap // mention -> eId
+  val reverseMap: Map[M, Long] = new LinkedHashMap // mention -> eId
 
   def getEntities: Iterable[Set[M]] = {
     entities.values

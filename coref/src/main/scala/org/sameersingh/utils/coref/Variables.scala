@@ -38,7 +38,7 @@ abstract class TrueEntityIndex[T <: MentionRecord](i: Int) extends IntegerVariab
 }
 
 /** Observed variable that contains the "features" of a mention */
-class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity: Entity[T]) extends VarWithValue[T] {
+class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity: Entity[T]) extends VarWithValue[T] with VarWithConstantValue {
   def value: T = record
 
   def domain = {
@@ -56,8 +56,6 @@ class Mention[T <: MentionRecord](val record: T, trueEntity: Int, initialEntity:
 
 
   def entity: Entity[T] = entityRef.value
-
-  override def isConstant = true
 
   override def toString = "Mention(" + record + "==" + entityRef.value.id + ")"
 }

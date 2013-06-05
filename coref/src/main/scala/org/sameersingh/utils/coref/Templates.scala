@@ -35,17 +35,10 @@ class Objective[R <: MentionRecord](val mentions: Iterable[Mention[R]])
   }
 }
 
-/*{
- sameersAffinityVector =>
- _set(new cc.factorie.la.DenseVector(domain.dimensionDomain.size) with CategoricalsValue[String] {
-   def domain = sameersAffinityVector.domain
- })
-} */
-
 abstract class AffinityVectorGetter[R <: MentionRecord] {
   def getAffinity(r1: R, r2: R): FeatureVectorVariable[String]
 
-  def domain: CategoricalDimensionTensorDomain[String]
+  def domain: CategoricalTensorDomain[String]
 }
 
 abstract class PairwiseTemplate[R <: MentionRecord](val avg: AffinityVectorGetter[R])
@@ -194,13 +187,15 @@ trait PairwiseCachedScore[R <: MentionRecord, S <: AffinityVector] extends Pairw
  */
 
 
-class Affinity[R <: MentionRecord](avg: AffinityVectorGetter[R])
+class Affinity[R <: MentionRecord](avg: AffinityVectorGetter[R], model: Parameters)
                                   (implicit nm1: Manifest[EntityRef[R]],
                                    nm2: Manifest[EntityRef[R]],
                                    nm3: Manifest[Mention[R]],
                                    nm4: Manifest[Mention[R]])
       extends PairwiseTemplate[R](avg)(nm1, nm2, nm3, nm4) {
   setFactorName("Affinity")
+
+  lazy val weights = model.Weights(new DenseTensor1(avg.domain.dimensionSize))
 
   def unroll1(er: EntityRef[R]): Iterable[FactorType] = {
     val factors: ArrayBuffer[FactorType] = new ArrayBuffer(er.value.size)
@@ -233,7 +228,7 @@ class Affinity[R <: MentionRecord](avg: AffinityVectorGetter[R])
   }*/
 }
 
-class Repulsion[R <: MentionRecord](avg: AffinityVectorGetter[R])
+class Repulsion[R <: MentionRecord](avg: AffinityVectorGetter[R], model: Parameters)
                                    (implicit nm1: Manifest[EntityRef[R]],
                                     nm2: Manifest[EntityRef[R]],
                                     nm3: Manifest[Mention[R]],
@@ -243,6 +238,8 @@ class Repulsion[R <: MentionRecord](avg: AffinityVectorGetter[R])
   var mentionList_ : Iterable[Mention[R]] = null
 
   def setMentions(mentionList: Iterable[Mention[R]]) = mentionList_ = mentionList
+
+  lazy val weights = model.Weights(new DenseTensor1(avg.domain.dimensionSize))
 
   override def factors(d: Diff) = d.variable match {
     case er: EntityRef[R] => d match {
@@ -281,17 +278,17 @@ class Repulsion[R <: MentionRecord](avg: AffinityVectorGetter[R])
 abstract class EntityVectorGetter[R <: MentionRecord] {
   def getFeatureVector(e: scala.collection.Set[Mention[R]]): FeatureVectorVariable[String]
 
-  def domain: CategoricalDimensionTensorDomain[String]
+  def domain: CategoricalTensorDomain[String]
 }
 
-class EntityTemplate[R <: MentionRecord](val evg: EntityVectorGetter[R])
+class EntityTemplate[R <: MentionRecord](val evg: EntityVectorGetter[R], model: Parameters)
                                         (implicit em: Manifest[Entity[R]])
       extends DotTemplate1[Entity[R]]()(em) {
   setFactorName("Entity")
 
   override def statistics(v1: Entity[R]#Value) = evg.getFeatureVector(v1).value
 
-  lazy val weightsTensor = new DenseTensor1(evg.domain.dimensionSize)
+  lazy val weights = model.Weights(new DenseTensor1(evg.domain.dimensionSize))
 
   //override def statisticsDomains = List(evg.domain)
 

@@ -13,7 +13,7 @@
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.9.2</scala.version>
+    <scala.version>2.10.1</scala.version>
   </properties>
 
   <modules>
@@ -51,19 +51,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-tools.testing</groupId>
-      <artifactId>specs_${scala.version}</artifactId>
-      <version>1.6.9</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_${scala.version}</artifactId>
-      <version>1.6.1</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -79,21 +67,6 @@
       <name>Sameer's repository</name>
       <url>https://github.com/sameersingh/maven-repo/raw/master/snapshots</url>
     </snapshotRepository>
-    <!-- repository>
-      <id>ieslnexus</id>
-      <name>IESL Nexus repostory</name>
-      <url>https://dev-iesl.cs.umass.edu/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>ieslnexus</id>
-      <name>IESL Nexus repostory</name>
-      <url>https://dev-iesl.cs.umass.edu/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <site>
-      <id>ieslwww</id>
-      <name>IESL www repository</name>
-      <url>scp://iesl.cs.umass.edu/m/iesl/data2/www/iesl/maven/factorie</url>
-    </site-->
   </distributionManagement>
 
   <build>

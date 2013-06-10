@@ -12,6 +12,7 @@ object Proposers {
 
   abstract class CorefProposer[R <: MentionRecord](model: Model) extends MHSampler[Null](model) {
     def setEntities(es: Seq[Entity[R]]): Unit
+
     def entities: Seq[Entity[R]]
   }
 
@@ -389,13 +390,18 @@ object Proposers {
   }
 
   class CanopizedSampler[R <: MentionRecord](model: TemplateModel, var mentionList: Seq[Mention[R]] = Seq.empty,
-                                    var entityList: Buffer[Entity[R]] = new ArrayBuffer[Entity[R]],
-                                    val canopizer: Canopizer[R] = new DefaultCanopizer[R])
-                                   (implicit nm1: Manifest[EntityRef[R]], nm2: Manifest[TrueEntityIndex[R]])
+                                             var entityList: Buffer[Entity[R]] = new ArrayBuffer[Entity[R]],
+                                             val canopizer: Canopizer[R] = new DefaultCanopizer[R])
+                                            (implicit nm1: Manifest[EntityRef[R]], nm2: Manifest[TrueEntityIndex[R]])
         extends CorefProposer[R](model) {
     val objective_ = new Objective(mentionList)
+    val emptyEntities = new HashSet[Entity[R]]
+    emptyEntities ++= entityList.filter(_.size == 0)
     protected var canopies = new HashMap[String, ArrayBuffer[Mention[R]]]
     initCanopies
+
+    var lastSource: Entity[R] = null
+    var lastDest: Entity[R] = null
 
     def initCanopies = {
       canopies.clear
@@ -415,27 +421,53 @@ object Proposers {
     def setEntities(es: Seq[Entity[R]]) = {
       entityList.clear()
       entityList ++= es
+      emptyEntities.clear()
+      emptyEntities ++= entityList.filter(_.size == 0)
       mentionList = es.flatMap(_.mentions).toSeq
       initCanopies
     }
 
     def nextMention(m: Mention[R] = null): Mention[R] = {
-      if (m == null) mentionList.sampleUniformly(cc.factorie.random)
-      else canopies(m.record.defaultCanopies.sampleUniformly(cc.factorie.random)).sampleUniformly(cc.factorie.random)
+      if (m == null) mentionList.sampleUniformly
+      else canopies(m.record.defaultCanopies.sampleUniformly).sampleUniformly
     }
 
     override def propose(context: Null)(implicit difflist: DiffList): Double = {
-      val m1 = nextMention()
-      val m2 = nextMention(m1)
-      //println("  m1.e.id="+m1.entity.id)
-      //println("  m2.e.id="+m2.entity.id)
-      if (m1.entity.id == m2.entity.id) {
-        //m2.entityRef.set(null)
-        m2.entityRef.set(new Entity(m2.record.id))
-      } else {
-        m2.entityRef.set(m1.entity)
-      }
+      var tries = 100
+      do {
+        val m1 = nextMention()
+        val m2 = nextMention(m1)
+        //println("  m1.e.id="+m1.entity.id)
+        //println("  m2.e.id="+m2.entity.id)
+        lastSource = m2.entity
+        if (m1.entity.id == m2.entity.id) {
+          // move m2 to empty entity
+          val e = if (emptyEntities.size > 0) emptyEntities.head
+          else {
+            new Entity[R](entityList.size)
+          }
+          m2.entityRef.set(e)
+        } else {
+          m2.entityRef.set(m1.entity)
+        }
+        lastDest = m2.entity
+        tries -= 1
+        assert(difflist.size != 0, "difflist is empty!: (%d -> %d(%d), %d -> %d(%d)), diff: %s" format(m1.record.id, m1.entity.id, m1.entity.size, m2.record.id, m2.entity.id, m2.entity.size, difflist.toString()))
+      } while (tries > 0 && difflist.size == 0)
       0.0
+    }
+
+    override def postAcceptanceHook(logAcceptanceProb: Double, d: DiffList) {
+      super.postAcceptanceHook(logAcceptanceProb, d)
+      if (lastSource.size == 0) {
+        assert(!emptyEntities(lastSource))
+        emptyEntities += lastSource
+      }
+      if (lastDest.size == 1) {
+        val removed = emptyEntities -= lastDest
+        // is lastDest is newly added
+        if (removed.isEmpty) entityList += lastDest
+      }
     }
 
     lazy val labeledMentionList = mentionList.filter(_.trueEntityIndex.intValue != -1).toSeq

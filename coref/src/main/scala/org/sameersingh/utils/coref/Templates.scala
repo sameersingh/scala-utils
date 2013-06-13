@@ -23,14 +23,16 @@ class Objective[R <: MentionRecord](val mentions: Iterable[Mention[R]])
     def score(v1: EntityRef[R]#Value, v2: TrueEntityIndex[R]#Value) = {
       val thisMentionEntity = v1
       val thisMentionTrueEntityIndex = v2
-      mentions.foldLeft(0.0)((total, m) =>
-        if (m.trueEntityIndex.value == thisMentionTrueEntityIndex) {
-          if (m.entityRef.value == thisMentionEntity) total + 1
-          else total - 1
-        } else {
-          if (m.entityRef.value == thisMentionEntity) total - 1
-          else total + 1
-        })
+      if (thisMentionTrueEntityIndex == -1) 0.0
+      else
+        mentions.filter(_.trueEntityIndex.value != -1).foldLeft(0.0)((total, m) =>
+          if (m.trueEntityIndex.value == thisMentionTrueEntityIndex) {
+            if (m.entityRef.value == thisMentionEntity) total + 1
+            else total - 1
+          } else {
+            if (m.entityRef.value == thisMentionEntity) total - 1
+            else total + 1
+          })
     }
   }
 }

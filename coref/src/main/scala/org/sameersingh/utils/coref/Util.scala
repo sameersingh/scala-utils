@@ -157,7 +157,7 @@ object Util {
       entities += entity
     }
     println(entities.toList)
-    val test = entities.shuffle
+    val test = entities.shuffle(cc.factorie.random)
     println(test.toList)
     moveEmptyEntitiesToBack(test)
     println(test)

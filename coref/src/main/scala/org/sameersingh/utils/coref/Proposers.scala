@@ -10,7 +10,7 @@ import org.sameersingh.utils.timing.TimeUtil
 
 object Proposers {
 
-  abstract class CorefProposer[R <: MentionRecord](model: Model) extends MHSampler[Null](model) {
+  abstract class CorefProposer[R <: MentionRecord](model: Model) extends MHSampler[Null](model)(random) {
     def setEntities(es: Seq[Entity[R]]): Unit
 
     def entities: Seq[Entity[R]]
@@ -424,6 +424,8 @@ object Proposers {
       emptyEntities.clear()
       emptyEntities ++= entityList.filter(_.size == 0)
       mentionList = es.flatMap(_.mentions).toSeq
+      lastSource = null
+      lastDest = null
       initCanopies
     }
 

@@ -15,6 +15,11 @@ object Math {
     (ps zip qs).map { case (p, q) => if (p == 0.0) 0.0 else p * log2(p / q) } sum
   }
 
+  def symmKL(ps: Seq[Double], qs: Seq[Double]): Double = {
+    assert(ps.size == qs.size)
+    kl(ps, qs) + kl(qs, ps)
+  }
+
   def half(xs: Seq[Double]): Seq[Double] = xs.map(x => 0.5 * x)
 
   def elemwiseAdd(ps: Seq[Double], qs: Seq[Double]): Seq[Double] =
@@ -23,6 +28,17 @@ object Math {
   def jensenShannonDivergence(ps: Seq[Double], qs: Seq[Double]): Double = {
     val ms = half(elemwiseAdd(ps, qs))
     0.5 * (kl(ps, ms) + kl(qs, ms))
+  }
+
+  def kolmogorovSmirnov(xs: Seq[Double], ys: Seq[Double]): Double = {
+    assert(xs.size == ys.size)
+    (xs zip ys).foldLeft((0.0,0.0,0.0))((m_sx_sy, xy) => {
+      val sumx = m_sx_sy._2 + xy._1
+      val sumy = m_sx_sy._3 + xy._2
+      val l1 = math.abs(sumx - sumy)
+      val max = math.max(m_sx_sy._1, l1)
+      (max, sumx, sumy)
+    })._1
   }
 
   def hellinger(xs: Seq[Double], ys: Seq[Double]): Double = {

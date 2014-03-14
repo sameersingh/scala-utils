@@ -26,6 +26,11 @@ object Json {
     writer.toString
   }
 
+  def generatePretty(value: Any): String = {
+    val writer = mapper.writer().withDefaultPrettyPrinter()
+    writer.writeValueAsString(value)
+  }
+
   def parse[T: Manifest](value: String) : T =
     mapper.readValue(value, typeReference[T])
 
